@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "tests.h": "c",
+        "malloc.h": "c",
+        "timer.h": "c",
+        "thread.h": "c",
+        "array": "c",
+        "deque": "c",
+        "vector": "c",
+        "string_view": "c",
+        "stdio.h": "c"
+    }
+}

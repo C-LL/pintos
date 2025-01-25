@@ -1,0 +1,23 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile and run",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-I", "e:/new/CS162/pintos/src/threads",
+                "-I", "e:/new/CS162/pintos/src/devices",
+                "-I", "e:/new/CS162/pintos/src/tests/threads",
+                "tempCodeRunnerFile.c",
+                "-o", "tempCodeRunnerFile",
+                "&&", "./tempCodeRunnerFile"
+            ],
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
