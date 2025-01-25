@@ -8,6 +8,7 @@
         "deque": "c",
         "vector": "c",
         "string_view": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "thread": "c"
     }
 }

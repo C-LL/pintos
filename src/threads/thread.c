@@ -237,7 +237,8 @@ thread_unblock (struct thread *t)
 
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-  list_push_back (&ready_list, &t->elem);
+  // list_push_back (&ready_list, &t->elem);
+  list_insert_ordered(&ready_list, &t->elem, (list_less_func *) &priority_less, NULL);
   t->status = THREAD_READY;
   intr_set_level (old_level);
 }
@@ -308,7 +309,8 @@ thread_yield (void)
 
   old_level = intr_disable ();
   if (cur != idle_thread) 
-    list_push_back (&ready_list, &cur->elem);
+    // list_push_back (&ready_list, &cur->elem);
+    list_insert_ordered(&ready_list, &cur->elem, (list_less_func *) &priority_less, NULL);
   // printf("Yield: thread %s at tick %lld.\n", cur->name, timer_ticks());
   cur->status = THREAD_READY;
   schedule ();
@@ -336,7 +338,11 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority) 
 {
-  thread_current ()->priority = new_priority;
+  // thread_current ()->priority = new_priority;
+  int old_priority = thread_current()->priority;
+  thread_current()->priority = new_priority;
+  if(new_priority < old_priority)
+    thread_yield();
 }
 
 /** Returns the current thread's priority. */
@@ -466,7 +472,8 @@ init_thread (struct thread *t, const char *name, int priority)
   t->magic = THREAD_MAGIC;
 
   old_level = intr_disable ();
-  list_push_back (&all_list, &t->allelem);
+  // list_push_back (&all_list, &t->allelem);
+  list_insert_ordered(&all_list, &t->allelem, (list_less_func *) &priority_less, NULL);
   intr_set_level (old_level);
 }
 

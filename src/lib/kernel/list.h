@@ -165,6 +165,9 @@ void list_reverse (struct list *);
 typedef bool list_less_func (const struct list_elem *a,
                              const struct list_elem *b,
                              void *aux);
+/** Compares priority  */
+bool priority_less(const struct list_elem *a, const struct list_elem *b,
+                   void *aux);
 
 /** Operations on lists with ordered elements. */
 void list_sort (struct list *,
