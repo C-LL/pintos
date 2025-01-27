@@ -182,6 +182,7 @@ thread_create (const char *name, int priority,
   /* Initialize thread. */
   init_thread (t, name, priority);
   tid = t->tid = allocate_tid ();
+  t->blocked_ticks = 0;
 
   /* Stack frame for kernel_thread(). */
   kf = alloc_frame (t, sizeof *kf);
@@ -238,7 +239,7 @@ thread_unblock (struct thread *t)
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
   // list_push_back (&ready_list, &t->elem);
-  list_insert_ordered(&ready_list, &t->elem, (list_less_func *) &priority_less, NULL);
+  list_insert_ordered(&ready_list, &t->elem, (list_less_func *) &priority_larger, NULL);
   t->status = THREAD_READY;
   intr_set_level (old_level);
 }
@@ -310,7 +311,7 @@ thread_yield (void)
   old_level = intr_disable ();
   if (cur != idle_thread) 
     // list_push_back (&ready_list, &cur->elem);
-    list_insert_ordered(&ready_list, &cur->elem, (list_less_func *) &priority_less, NULL);
+    list_insert_ordered(&ready_list, &cur->elem, (list_less_func *) &priority_larger, NULL);
   // printf("Yield: thread %s at tick %lld.\n", cur->name, timer_ticks());
   cur->status = THREAD_READY;
   schedule ();
@@ -473,7 +474,7 @@ init_thread (struct thread *t, const char *name, int priority)
 
   old_level = intr_disable ();
   // list_push_back (&all_list, &t->allelem);
-  list_insert_ordered(&all_list, &t->allelem, (list_less_func *) &priority_less, NULL);
+  list_insert_ordered(&all_list, &t->allelem, (list_less_func *) &priority_larger, NULL);
   intr_set_level (old_level);
 }
 
@@ -590,3 +591,12 @@ allocate_tid (void)
 /** Offset of `stack' member within `struct thread'.
    Used by switch.S, which can't figure it out on its own. */
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
+
+void blocked_thread_check (struct thread *t, void *aux UNUSED) {
+  if(t->status == THREAD_BLOCKED && t->blocked_ticks > 0) {
+    t->blocked_ticks--;
+    if(t->blocked_ticks == 0){
+      thread_unblock(t);
+    }
+  }
+}

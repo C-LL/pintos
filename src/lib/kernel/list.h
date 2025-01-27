@@ -166,7 +166,7 @@ typedef bool list_less_func (const struct list_elem *a,
                              const struct list_elem *b,
                              void *aux);
 /** Compares priority  */
-bool priority_less(const struct list_elem *a, const struct list_elem *b,
+bool priority_larger(const struct list_elem *a, const struct list_elem *b,
                    void *aux);
 
 /** Operations on lists with ordered elements. */

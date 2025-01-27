@@ -440,11 +440,11 @@ list_sort (struct list *list, list_less_func *less, void *aux)
   ASSERT (is_sorted (list_begin (list), list_end (list), less, aux));
 }
 
-bool priority_less(const struct list_elem *a, const struct list_elem *b,
+bool priority_larger(const struct list_elem *a, const struct list_elem *b,
                    void *aux UNUSED) {
   const struct thread *thread_a = list_entry(a, struct thread, elem);
   const struct thread *thread_b = list_entry(b, struct thread, elem);
-  return thread_a->priority < thread_b->priority;
+  return thread_a->priority > thread_b->priority;
                    }
 
 /** Inserts ELEM in the proper position in LIST, which must be
