@@ -4,6 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
+#include <threads/synch.h>
 
 /** States in a thread's life cycle. */
 enum thread_status
@@ -88,6 +89,9 @@ struct thread
     char name[16];                      /**< Name (for debugging purposes). */
     uint8_t *stack;                     /**< Saved stack pointer. */
     int priority;                       /**< Priority. */
+    int base_priority;                  /**< Base priority. */
+    struct list locks;                  /**< Locks that the thread is holding. */
+    struct lock *lock_waiting;          /**< The lock that the thread is waiting for. */
     struct list_elem allelem;           /**< List element for all threads list. */
     int64_t blocked_ticks;              /**< Blocked time. */
 
@@ -128,6 +132,8 @@ void thread_exit (void) NO_RETURN;
 void thread_yield (void);
 
 void blocked_thread_check (struct thread *t, void *aux UNUSED);
+void thread_donate_priority(struct thread *t);
+void thread_update_priority(struct thread *t);
 
 /** Performs some operation on thread t, given auxiliary data AUX. */
 typedef void thread_action_func (struct thread *t, void *aux);

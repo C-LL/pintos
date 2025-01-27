@@ -9,6 +9,7 @@
         "vector": "c",
         "string_view": "c",
         "stdio.h": "c",
-        "thread": "c"
+        "thread": "c",
+        "synch.h": "c"
     }
 }
