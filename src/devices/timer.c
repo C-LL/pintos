@@ -24,11 +24,12 @@ static int64_t ticks;
    Initialized by timer_calibrate(). */
 static unsigned loops_per_tick;
 
-static intr_handler_func timer_interrupt;
+static intr_handler_func timer_int_interrupt;
 static bool too_many_loops (unsigned loops);
 static void busy_wait (int64_t loops);
 static void real_time_sleep (int64_t num, int32_t denom);
 static void real_time_delay (int64_t num, int32_t denom);
+static void timer_interrupt(struct intr_frame *args UNUSED);
 
 /** Sets up the timer to interrupt TIMER_FREQ times per second,
    and registers the corresponding interrupt. */
@@ -196,6 +197,14 @@ timer_interrupt (struct intr_frame *args UNUSED)
   ticks++;
   thread_tick ();
   thread_foreach (blocked_thread_check, NULL);
+  if(thread_mlfqs)
+  {
+    thread_mlfqs_increase_recent_cpu_by_one();
+    if(ticks % TIMER_FREQ == 0)
+      thread_mlfqs_update_load_avg_and_recent_cpu();
+    else if(ticks % 4 == 0)
+      thread_mlfqs_update_priority(thread_current());
+  }
 }
 
 /** Returns true if LOOPS iterations waits for more than one timer

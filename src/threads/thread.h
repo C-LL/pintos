@@ -5,6 +5,7 @@
 #include <list.h>
 #include <stdint.h>
 #include <threads/synch.h>
+#include <threads/fixed_point.h>
 
 /** States in a thread's life cycle. */
 enum thread_status
@@ -94,7 +95,9 @@ struct thread
     struct lock *lock_waiting;          /**< The lock that the thread is waiting for. */
     struct list_elem allelem;           /**< List element for all threads list. */
     int64_t blocked_ticks;              /**< Blocked time. */
-
+    int nice;                           /**< Nice value. */
+    fixed_t recent_cpu;                 /**< Recent CPU. */
+    
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /**< List element. */
 
@@ -134,6 +137,9 @@ void thread_yield (void);
 void blocked_thread_check (struct thread *t, void *aux UNUSED);
 void thread_donate_priority(struct thread *t);
 void thread_update_priority(struct thread *t);
+void thread_mlfqs_increase_recent_cpu_by_one();
+void thread_mlfqs_update_load_avg_and_recent_cpu();
+void thread_mlfqs_update_priority(struct thread *t);
 
 /** Performs some operation on thread t, given auxiliary data AUX. */
 typedef void thread_action_func (struct thread *t, void *aux);
@@ -142,7 +148,7 @@ void thread_foreach (thread_action_func *, void *);
 int thread_get_priority (void);
 void thread_set_priority (int);
 
-int thread_get_nice (void);
+int thread_get_niceget_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
